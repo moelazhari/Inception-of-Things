@@ -29,7 +29,7 @@ fi
 # ---------------------------
 if ! command -v k3d &>/dev/null; then
   echo "☸️ Installing k3d..."
-  curl -Lo "$BIN_DIR/k3d" -s  "https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh" | sh
+  curl -Lo "$BIN_DIR/k3d" "https://github.com/k3d-io/k3d/releases/latest/download/k3d-darwin-amd64"
   chmod +x "$BIN_DIR/k3d"
 else
   echo "✅ k3d already installed"
