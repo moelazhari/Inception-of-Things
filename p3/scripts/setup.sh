@@ -13,7 +13,7 @@ export PATH="$BIN_DIR:$PATH"
 
 echo "🚀 Installing tools to $BIN_DIR..."
 
-# ---------------------------
+# ---------------------------cd .
 # 1. Install kubectl
 # ---------------------------
 if ! command -v kubectl &>/dev/null; then
@@ -47,7 +47,7 @@ fi
 # 4. Create k3d cluster with timeout
 # ---------------------------
 echo "🚀 Creating k3d cluster..."
-k3d cluster create iot-cluster
+k3d cluster create iot-cluster -p "8080:30443@loadbalancer"
 
 # ---------------------------
 # 5. Create namespaces
@@ -65,23 +65,45 @@ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/st
 echo "⏳ Waiting for Argo CD server to be available..."
 kubectl wait --for=condition=available --timeout=180s deployment/argocd-server -n argocd
 
+# ---------------------------
+# 10. apllying Argo CD config
+# ---------------------------
+echo "⏳ apllying Argo CD config..."
+kubectl apply -f ../configs/argoCD.yaml
 
 # ---------------------------
-# 10. Get Argo CD password
+# 11. Patching Argo CD service to NodePort
 # ---------------------------
-echo "🔐 Argo CD admin password:"
-kubectl -n argocd get secret argocd-initial-admin-secret \
-  -o jsonpath="{.data.password}" | base64 -d && echo
+echo "🔧 Patching Argo CD service to NodePort..."
+kubectl patch svc argocd-server -n argocd --type='json' -p='[
+  {"op": "replace", "path": "/spec/type", "value": "NodePort"},
+  {"op": "replace", "path": "/spec/ports/0/nodePort", "value": 30443}
+]'
+
+# kubectl patch statefulset argocd-application-controller -n argocd \
+#   --type='json' \
+#   -p='[
+#     {
+#       "op": "add",
+#       "path": "/spec/template/spec/containers/0/env/-",
+#       "value": {
+#         "name": "ARGOCD_RECONCILIATION_TIMEOUT",
+#         "value": "10s"
+#       }
+#     }
+#   ]'
+
+ARGOCDPASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret \
+  -o jsonpath="{.data.password}" | base64 -d)
 
 echo "
 ✅ Setup complete! 🎉
 
 🔗 To access the Argo CD UI:
-Run:
-    kubectl port-forward svc/argocd-server -n argocd 8080:443
-Then visit:
+Open in browser:
     https://localhost:8080
 
 Login:
     Username: admin
-    Password: (above)
+    Password: $ARGOCDPASSWORD
+"
