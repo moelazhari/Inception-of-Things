@@ -12,7 +12,7 @@ Vagrant.configure("2") do |config|
 
     
     master.vm.provider "virtualbox" do |vb|
-      vb.customize ["modifyvm", :id, "--name", "ael-korcS"]
+      vb.name = "ael-korcS"
       vb.cpus = 2
       vb.memory = 1024
     end
@@ -21,15 +21,15 @@ Vagrant.configure("2") do |config|
     
     master.vm.hostname = "ael-korcS"
     
-    master.vm.provision "shell", path: "./tools/setupS.sh", args: [pubkey]
+    master.vm.provision "shell", path: "./scripts/setupS.sh", args: [pubkey]
     
   end
-  #==========Be able to connect with SSH on both machines with no password.===========
+
   config.vm.define "ael-korcSW" do |worker|
 
     
     worker.vm.provider "virtualbox" do |vb|
-      vb.customize ["modifyvm", :id, "--name", "ael-korcSW"]
+      vb.name = "ael-korcSW"
       vb.cpus = 2
       vb.memory = 1024
     end
@@ -39,14 +39,7 @@ Vagrant.configure("2") do |config|
     
     worker.vm.hostname = "ael-korcSW"
 
-    worker.vm.provision "shell", path: "./tools/setupSW.sh", args: [pubkey]
+    worker.vm.provision "shell", path: "./scripts/setupSW.sh", args: [pubkey]
   end
-  
-  # Share an additional folder to the guest VM. The first argument is
-  # the path on the host to the actual folder. The second argument is
-  # the path on the guest to mount the folder. And the optional third
-  # argument is a set of non-required options.
 
-
-  
 end

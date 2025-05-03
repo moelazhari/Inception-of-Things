@@ -10,4 +10,4 @@ until kubectl get nodes &> /dev/null; do
     sleep 2
 done
 
-kubectl apply -f /vagrant/configs
+kubectl apply -f /vagrant/confs
