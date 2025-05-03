@@ -1,3 +1,6 @@
+#!/bin/bash
+set -e
+
 mkdir -p /home/vagrant/.ssh
 echo "$1" >> /home/vagrant/.ssh/authorized_keys
 

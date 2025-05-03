@@ -9,26 +9,32 @@ NODE = {
     }
 }
 
+PUBKEY = File.readlines(File.expand_path("~/.ssh/id_rsa.pub")).first.strip
+
 Vagrant.configure("2") do |config|
     config.vm.box = "generic/alpine318"
     config.vm.box_version = "4.3.12"
 
-  
-    config.vm.hostname = NODE[:hostname]
-    config.vm.network "private_network", ip: NODE[:ip]
-  
-    config.vm.provider NODE[:provider][:name] do |vb|
-          vb.name = NODE[:hostname]
-          vb.memory = NODE[:provider][:memory]
-          vb.cpus = NODE[:provider][:cpus]
+    config.vm.define NODE[:hostname] do |node|
+        node.vm.box = "generic/alpine318"
+        node.vm.box_version = "4.3.12"
+        node.vm.hostname = NODE[:hostname]
+
+        node.vm.network "private_network", ip: NODE[:ip]
+
+        node.vm.provider NODE[:provider][:name] do |vb|
+        vb.name = NODE[:hostname]
+        vb.memory = NODE[:provider][:memory]
+        vb.cpus = NODE[:provider][:cpus]
+        end
     end
-  
+    
     config.vm.provision "shell", inline: <<-SHELL
         sudo apk update 
         sudo apk add curl
     SHELL
 
-    config.vm.provision "shell", path: "scripts/install_config_k3s.sh"
+    config.vm.provision "shell", path: "scripts/install_config_k3s.sh", args: [PUBKEY]
     
     config.vm.synced_folder ".", "/vagrant", type: "virtualbox"
 end
