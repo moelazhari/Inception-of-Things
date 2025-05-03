@@ -56,7 +56,7 @@ kubectl create namespace dev
 # Step 11: Install Argo CD in the 'argocd' namespace
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
-sleep 60
+kubectl wait --for=condition=available --timeout=180s deployment/argocd-server -n argocd
 
 # Step 112: Patch the Argo CD server service to use NodePort 32224 for HTTPS
 kubectl patch svc argocd-server -n argocd --patch '{
