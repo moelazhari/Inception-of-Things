@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-deployment
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      web: app
+  template:
+    metadata:
+      labels:
+        web: app
+    spec:
+      containers:
+        - name: webapp
+          image: wil42/playground:v1
+    

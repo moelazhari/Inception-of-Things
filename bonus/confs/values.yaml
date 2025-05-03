@@ -1,0 +1,6 @@
+# values.yaml
+global:
+  hosts:
+    domain: 46.101.86.85.nip.io
+certmanager-issuer:
+  email: korchia34@gmail.com
