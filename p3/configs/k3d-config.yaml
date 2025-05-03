@@ -1,0 +1,15 @@
+apiVersion: k3d.io/v1alpha5
+kind: Simple
+metadata:
+  name: iot-cluster
+servers: 1
+ports:
+  - port: 8080:30443
+    nodeFilters: [loadbalancer]
+  - port: 8888:30080
+    nodeFilters: [loadbalancer]
+options:
+  k3s:
+    extraArgs:
+      - arg: "--disable=traefik"
+        nodeFilters: [server:*]

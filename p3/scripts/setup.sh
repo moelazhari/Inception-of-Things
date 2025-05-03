@@ -13,7 +13,7 @@ export PATH="$BIN_DIR:$PATH"
 
 echo "🚀 Installing tools to $BIN_DIR..."
 
-# ---------------------------cd .
+# ---------------------------
 # 1. Install kubectl
 # ---------------------------
 if ! command -v kubectl &>/dev/null; then
@@ -47,7 +47,8 @@ fi
 # 4. Create k3d cluster with timeout
 # ---------------------------
 echo "🚀 Creating k3d cluster..."
-k3d cluster create iot-cluster -p "8080:30443@loadbalancer"
+k3d cluster delete iot-cluster >/dev/null 2>&1 || true
+k3d cluster create --config ../configs/k3d-config.yaml
 
 # ---------------------------
 # 5. Create namespaces
@@ -80,19 +81,6 @@ kubectl patch svc argocd-server -n argocd --type='json' -p='[
   {"op": "replace", "path": "/spec/ports/0/nodePort", "value": 30443}
 ]'
 
-# kubectl patch statefulset argocd-application-controller -n argocd \
-#   --type='json' \
-#   -p='[
-#     {
-#       "op": "add",
-#       "path": "/spec/template/spec/containers/0/env/-",
-#       "value": {
-#         "name": "ARGOCD_RECONCILIATION_TIMEOUT",
-#         "value": "10s"
-#       }
-#     }
-#   ]'
-
 ARGOCDPASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret \
   -o jsonpath="{.data.password}" | base64 -d)
 
@@ -106,4 +94,7 @@ Open in browser:
 Login:
     Username: admin
     Password: $ARGOCDPASSWORD
+
+🔗 To access the App: 
+    http://localhost:8888
 "
