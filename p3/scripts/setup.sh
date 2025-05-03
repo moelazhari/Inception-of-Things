@@ -48,7 +48,7 @@ fi
 # ---------------------------
 echo "🚀 Creating k3d cluster..."
 k3d cluster delete iot-cluster >/dev/null 2>&1 || true
-k3d cluster create --config ../configs/k3d-config.yaml
+k3d cluster create --config ../confs/k3d-config.yaml
 
 # ---------------------------
 # 5. Create namespaces
@@ -70,7 +70,7 @@ kubectl wait --for=condition=available --timeout=180s deployment/argocd-server -
 # 10. apllying Argo CD config
 # ---------------------------
 echo "⏳ apllying Argo CD config..."
-kubectl apply -f ../configs/argoCD.yaml
+kubectl apply -f ../confs/argoCD.yaml
 
 # ---------------------------
 # 11. Patching Argo CD service to NodePort
