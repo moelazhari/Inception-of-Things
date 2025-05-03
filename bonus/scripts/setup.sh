@@ -47,7 +47,6 @@ helm install gitlab gitlab/gitlab -n gitlab --create-namespace -f ../confs/value
 # Step 9: Patch the GitLab NGINX Ingress controller service to use a specific NodePort (32222) for HTTPS
 kubectl patch svc gitlab-nginx-ingress-controller -n gitlab --patch '{"spec":{"ports":[{"name":"https","nodePort":32222,"port":443,"protocol":"TCP"}]}}'
 
-echo "--------Gitlab is now accessible on https://gitlab.46.101.86.85.nip.io-------"
 
 # Step 10: Create namespaces for Argo CD and development
 kubectl create namespace argocd
@@ -84,6 +83,7 @@ while true; do
   sleep 10
 done
 
+echo "--------Gitlab is now accessible on https://gitlab.46.101.86.85.nip.io-------"
 echo "--------    argocd is now accessible on https://46.101.86.85:444    -------"
 
 # Step 14: Retrieve the initial admin password for Argo CD
